@@ -218,5 +218,5 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
-duy-docs/
+# Day 13 lab: log append-only sinh ra khi chay app -> khong commit (TEAMWORK.md 5.3)
+data/logs.jsonl

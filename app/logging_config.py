@@ -23,15 +23,32 @@ class JsonlFileProcessor:
 
 
 
+# Cac truong dinh danh ky thuat: khong scrub de khong lam sai contract/format.
+SCRUB_EXEMPT_KEYS = frozenset({"ts", "level", "correlation_id"})
+
+
+def _scrub_value(value: Any) -> Any:
+    """Scrub de quy: PII co the nam trong dict/list long nhau trong payload."""
+    if isinstance(value, str):
+        return scrub_text(value)
+    if isinstance(value, dict):
+        return {k: _scrub_value(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_scrub_value(v) for v in value]
+    return value
+
+
 def scrub_event(_: Any, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
-    payload = event_dict.get("payload")
-    if isinstance(payload, dict):
-        event_dict["payload"] = {
-            k: scrub_text(v) if isinstance(v, str) else v for k, v in payload.items()
-        }
-    if "event" in event_dict and isinstance(event_dict["event"], str):
-        event_dict["event"] = scrub_text(event_dict["event"])
-    return event_dict
+    """Chan PII trong MOI truong string cua log record, khong chi trong payload.
+
+    validate_logs.py quet toan bo JSON record (json.dumps(rec)), nen chi scrub
+    `payload` la khong du: mot truong bi lot (vi du session_id mang email that)
+    van bi tinh la leak.
+    """
+    return {
+        key: value if key in SCRUB_EXEMPT_KEYS else _scrub_value(value)
+        for key, value in event_dict.items()
+    }
 
 
 
@@ -42,8 +59,9 @@ def configure_logging() -> None:
             merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.TimeStamper(fmt="iso", utc=True, key="ts"),
-            # TODO: Register your PII scrubbing processor here
-            # scrub_event,
+            # Scrub PII TRUOC khi ghi file/stdout, sau khi da merge contextvars
+            # va them ts/level -> khong record nao ra ngoai ma chua qua redaction.
+            scrub_event,
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
             JsonlFileProcessor(),

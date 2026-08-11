@@ -3,12 +3,37 @@ from __future__ import annotations
 import hashlib
 import re
 
+# Tu khoa dia chi VN. Giu ca dang co dau/khong dau cua tu de bat duoc du bien the,
+# nhung khong dung (?i) toan cuc: "quan sat"/"phuong phap" la tu thuong gap trong
+# noi dung lab, neu match khong dau + khong phan biet hoa/thuong se che sai.
+_ADDRESS_KEYWORDS = "|".join(
+    (
+        "Số nhà", "số nhà",
+        "Đường", "đường",
+        "Phố", "phố",
+        "Phường", "phường",
+        "Quận", "quận",
+        "Xã", "xã",
+        "Huyện", "huyện",
+        "Thị trấn", "thị trấn",
+        "Thành phố", "thành phố",
+        "Tỉnh", "tỉnh",
+    )
+)
+
 PII_PATTERNS: dict[str, str] = {
     "email": r"[\w\.-]+@[\w\.-]+\.\w+",
     "phone_vn": r"(?<!\d)(?:\+84|0)(?:[ .-]?\d){9}(?!\d)",
     "cccd": r"\b\d{12}\b",
     "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
-    # TODO: Add more patterns (e.g., Passport, Vietnamese address keywords)
+    # Ho chieu VN/quoc te pho bien: 1 chu cai in hoa + 7 chu so (B1234567).
+    "passport": r"\b[A-Z]\d{7}\b",
+    # Dia chi VN: tu khoa hanh chinh + so nha hoac cac tu viet hoa theo sau.
+    "address_vn": (
+        rf"(?:{_ADDRESS_KEYWORDS})\s+"
+        r"(?:\d+[A-Za-z]?(?:/\d+)*|[A-ZĐÀ-Ỹ]\w*)"
+        r"(?:\s+[A-ZĐÀ-Ỹ]\w*)*"
+    ),
 }
 
 
