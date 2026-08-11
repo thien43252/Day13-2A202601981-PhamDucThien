@@ -16,15 +16,15 @@
 
 ## 2. Kết quả kỹ thuật
 
-- Điểm `validate_logs.py`: 30/100
-- Tổng số traces: 21
+- Điểm `validate_logs.py`: 100/100
+- Tổng số traces: 20
 - Số PII leak còn lại: 0
 - Link/đường dẫn dashboard:
 
 ## 3. Logging và tracing
 
-- Evidence correlation ID:
-- Evidence PII redaction:
+- Evidence correlation ID: submission\evidence\r1-log-correlation-id.png
+- Evidence PII redaction: submission\evidence\r1-pii-redacted.png
 - Evidence trace waterfall:
 - Giải thích một span đáng chú ý:
 
@@ -57,6 +57,6 @@
 
 Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 
-| Thành viên | Phần việc | Commit/PR | Điều đã học |
-| ------------ | ----------- | --------- | ---------------- |
-|              |             |           |                  |
+| Thành viên        | Phần việc                                                    | Commit/PR                                                        | Điều đã học                                                                                                                                                                                                               |
+| ------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Phạm Đức Thiện  | R1 — correlation ID, log enrichment, JSON log, PII redaction  | `782413b`, `b058330`, `0ab7464`, `0419918`, `f428d5e`  | Redaction phải đặt ở processor cuối chain, không phải ở từng call site: chỉ cần một chỗ log quên gọi`summarize_text` là leak. Và validator quét cả record nên scrub riêng `payload` là không đủ.  |

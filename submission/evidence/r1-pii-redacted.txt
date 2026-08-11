@@ -1,6 +1,0 @@
-# R1 evidence: PII da bi redact truoc khi ghi log
-# Input goc nam trong data/sample_queries.jsonl (email, phone VN, credit card)
-
-req-59f5080d | request_received | message_preview = What is your refund policy? My email is [REDACTED_EMAIL]
-req-a5847ea1 | request_received | message_preview = Here is my phone [REDACTED_PHONE_VN], what should be logged?
-req-2d8c34e3 | request_received | message_preview = What is the policy for PII and credit card [REDACTED_CREDIT_CARD]?
