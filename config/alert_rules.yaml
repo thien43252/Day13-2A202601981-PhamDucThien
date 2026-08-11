@@ -1,19 +1,19 @@
 alerts:
-  - name: TODO_alert_1
-    severity: TODO
-    condition: TODO
+  - name: high_latency_p95
+    severity: warning
+    condition: "p95(latency_ms) >= 2500ms sustained for 5m or p95 >= 3000ms for 2m"
     type: symptom-based
-    owner: TODO
+    owner: R3
     runbook: docs/alerts.md#alert-1
-  - name: TODO_alert_2
-    severity: TODO
-    condition: TODO
+  - name: elevated_error_rate
+    severity: warning
+    condition: "error_rate = count(request_failed) / count(request_received) >= 2% sustained for 5m"
     type: symptom-based
-    owner: TODO
+    owner: R3
     runbook: docs/alerts.md#alert-2
-  - name: TODO_alert_3
-    severity: TODO
-    condition: TODO
+  - name: quality_score_degradation
+    severity: info
+    condition: "mean(quality_score) < 0.75 for 10m or point-in-time < 0.65"
     type: symptom-based
-    owner: TODO
+    owner: R3
     runbook: docs/alerts.md#alert-3
