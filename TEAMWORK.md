@@ -3,19 +3,19 @@
 Tài liệu này chia 4 vai trò trong [README.md](README.md) thành 4 luồng làm việc **song song**, mỗi luồng sở hữu một tập file riêng để hạn chế tối đa conflict khi ghép code.
 
 - Vai trò và evidence bắt buộc: [README.md](README.md#phân-vai-nhóm--tối-đa-4-vai-trò)
-- Mốc thời gian gốc: [CHECKPOINTS.md](CHECKPOINTS.md)
+- Mốc thời gian gốc: [CHECKPOINTS.md](CHECKPOINTS.md).
 - Cách chấm điểm: [RUBRIC.md](RUBRIC.md) — 60 điểm nhóm + 40 điểm cá nhân, nên **mỗi người phải có commit riêng có thể kiểm tra được**.
 
 ---
 
 ## 1. Bảng phân vai
 
-| Vai | Thành viên | Mã học viên | Phạm vi chính |
-|---|---|---|---|
-| **R1 — Logging & PII** | Phạm Đức Thiện | 2A202601981 | correlation ID, enrichment metadata, JSON log, redaction |
-| **R2 — Tracing & Prompt Version** | Phạm Khắc Duy | 2A202601757 | Langfuse traces, prompt v1/v2, label & rollback |
-| **R3 — Dashboard, SLO & Alert** | Nguyễn Ngọc Thuận | 2A202601949 | 6 panel, threshold, SLO, alert rules, runbook |
-| **R4 — Incident, Report & Demo** | Trần Công Chiến | 2A202601053 | challenge K4, Metrics → Traces → Logs, report, demo |
+| Vai                                      | Thành viên         | Mã học viên | Phạm vi chính                                          |
+| ---------------------------------------- | -------------------- | -------------- | -------------------------------------------------------- |
+| **R1 — Logging & PII**            | Phạm Đức Thiện   | 2A202601981    | correlation ID, enrichment metadata, JSON log, redaction |
+| **R2 — Tracing & Prompt Version** | Phạm Khắc Duy      | 2A202601757    | Langfuse traces, prompt v1/v2, label & rollback          |
+| **R3 — Dashboard, SLO & Alert**   | Nguyễn Ngọc Thuận | 2A202601949    | 6 panel, threshold, SLO, alert rules, runbook            |
+| **R4 — Incident, Report & Demo**  | Trần Công Chiến   | 2A202601053    | challenge K4, Metrics → Traces → Logs, report, demo    |
 
 > Vai trò có thể hoán đổi giữa các thành viên, nhưng **giữ nguyên ranh giới file ở mục 3** — đó là thứ quyết định việc merge có sạch hay không.
 
@@ -50,12 +50,12 @@ Mọi log của `service == "api"` phải có đủ các trường sau (theo [co
 
 ### 2.2. Hợp đồng prompt (R2 sản xuất — R4 tiêu thụ)
 
-| Biến | Giá trị chốt |
-|---|---|
-| `LANGFUSE_PROMPT_NAME` | `day13-chat` |
-| Label baseline | `production` (trỏ vào v1) |
-| Label candidate | `candidate` (trỏ vào v2) |
-| Biến trong template | `{{feature}}`, `{{docs}}`, `{{message}}` |
+| Biến                    | Giá trị chốt                                |
+| ------------------------ | ---------------------------------------------- |
+| `LANGFUSE_PROMPT_NAME` | `day13-chat`                                 |
+| Label baseline           | `production` (trỏ vào v1)                  |
+| Label candidate          | `candidate` (trỏ vào v2)                   |
+| Biến trong template     | `{{feature}}`, `{{docs}}`, `{{message}}` |
 
 Tên biến phải khớp tham số `compile()` trong [app/prompt_management.py:63-67](app/prompt_management.py#L63-L67), nếu không prompt v2 sẽ rơi về `local-fallback`.
 
@@ -82,24 +82,24 @@ main                     ← chỉ R4 merge vào
 
 Nguyên tắc: **chỉ sửa file trong cột của mình**. Cần đổi file của người khác thì nhắn cho chủ sở hữu, không tự sửa.
 
-| File / thư mục | Chủ sở hữu | Ghi chú |
-|---|---|---|
-| [app/middleware.py](app/middleware.py) | R1 | 4 TODO: clear/extract/bind contextvars + response headers |
-| [app/logging_config.py](app/logging_config.py) | R1 | 1 TODO: đăng ký `scrub_event` vào processor chain |
-| [app/pii.py](app/pii.py) | R1 | 1 TODO: bổ sung pattern (passport, địa chỉ VN) |
-| [app/main.py](app/main.py) | R1 | 1 TODO ở `/chat` (dòng 47): `bind_contextvars(...)` |
-| [app/tracing.py](app/tracing.py) | R2 | cấu hình client Langfuse, flush |
-| [app/prompt_management.py](app/prompt_management.py) | R2 | resolve prompt theo label |
-| [app/agent.py](app/agent.py) | R2 | metadata trace/generation |
-| `.env` (local, **không commit**) | R2 chốt key, cả nhóm copy | `LANGFUSE_*` |
-| [config/dashboard.yaml](config/dashboard.yaml) | R3 | 6 panel + threshold |
-| [config/slo.yaml](config/slo.yaml) | R3 | thay `note: Replace with your group's target` |
-| [config/alert_rules.yaml](config/alert_rules.yaml) | R3 | 3 alert đang là `TODO` |
-| [docs/alerts.md](docs/alerts.md) | R3 | runbook cho `#alert-1..3` |
-| [submission/REPORT.md](submission/REPORT.md) | **R4 duy nhất** | người khác ghi vào file note riêng, xem 5.2 |
-| [config/challenge.json](config/challenge.json) | **không ai** | sửa file này = vi phạm [RULES.md](RULES.md) |
-| `submission/evidence/` | tất cả | mỗi người dùng **tiền tố tên file riêng**, xem 5.1 |
-| `tests/` | tất cả (chỉ thêm test mới) | không sửa test có sẵn để cho pass |
+| File / thư mục                                    | Chủ sở hữu                   | Ghi chú                                                        |
+| --------------------------------------------------- | ------------------------------- | --------------------------------------------------------------- |
+| [app/middleware.py](app/middleware.py)               | R1                              | 4 TODO: clear/extract/bind contextvars + response headers       |
+| [app/logging_config.py](app/logging_config.py)       | R1                              | 1 TODO: đăng ký`scrub_event` vào processor chain          |
+| [app/pii.py](app/pii.py)                             | R1                              | 1 TODO: bổ sung pattern (passport, địa chỉ VN)              |
+| [app/main.py](app/main.py)                           | R1                              | 1 TODO ở`/chat` (dòng 47): `bind_contextvars(...)`        |
+| [app/tracing.py](app/tracing.py)                     | R2                              | cấu hình client Langfuse, flush                               |
+| [app/prompt_management.py](app/prompt_management.py) | R2                              | resolve prompt theo label                                       |
+| [app/agent.py](app/agent.py)                         | R2                              | metadata trace/generation                                       |
+| `.env` (local, **không commit**)           | R2 chốt key, cả nhóm copy    | `LANGFUSE_*`                                                  |
+| [config/dashboard.yaml](config/dashboard.yaml)       | R3                              | 6 panel + threshold                                             |
+| [config/slo.yaml](config/slo.yaml)                   | R3                              | thay`note: Replace with your group's target`                  |
+| [config/alert_rules.yaml](config/alert_rules.yaml)   | R3                              | 3 alert đang là`TODO`                                       |
+| [docs/alerts.md](docs/alerts.md)                     | R3                              | runbook cho`#alert-1..3`                                      |
+| [submission/REPORT.md](submission/REPORT.md)         | **R4 duy nhất**          | người khác ghi vào file note riêng, xem 5.2                |
+| [config/challenge.json](config/challenge.json)       | **không ai**             | sửa file này = vi phạm[RULES.md](RULES.md)                    |
+| `submission/evidence/`                            | tất cả                        | mỗi người dùng**tiền tố tên file riêng**, xem 5.1 |
+| `tests/`                                          | tất cả (chỉ thêm test mới) | không sửa test có sẵn để cho pass                         |
 
 Điểm nóng duy nhất là `app/main.py` (R1) và `app/agent.py` (R2) — hai file này gọi lẫn nhau nhưng **không cần sửa chéo**: R1 chỉ thêm `bind_contextvars` ở đầu handler `/chat`, R2 chỉ sửa phần trong `LabAgent.run`. Nếu R2 thấy thiếu trường log, báo R1 thay vì tự sửa `main.py`.
 
@@ -109,16 +109,16 @@ Nguyên tắc: **chỉ sửa file trong cột của mình**. Cần đổi file c
 
 Vấn đề phụ thuộc lớn nhất: **R3 và R4 cần `data/logs.jsonl` đúng chuẩn, mà file đó chỉ đúng sau khi R1 xong.** Cách gỡ: trong giờ đầu R3 và R4 làm phần *không cần dữ liệu thật* (config, runbook, khung report, đọc challenge), R1 được ưu tiên merge sớm nhất.
 
-| Khung giờ | R1 — Logging & PII | R2 — Tracing & Prompt | R3 — Dashboard & Alert | R4 — Incident & Report |
-|---|---|---|---|---|
-| **0:00–0:15** | Chốt 4 hợp đồng ở mục 2 (cả nhóm) | ← | ← | ← |
-| **0:15–0:30** | Setup env, chạy `load_test.py`, lưu baseline `validate_logs.py` | Setup, lấy Langfuse key, `/health` báo `tracing_enabled: true` | Chạy `validate_dashboard.py` để hiểu contract | Đọc `config/challenge.json`, dựng khung report |
-| **0:30–1:30** | **Đường găng.** Xong 4 TODO middleware + processor `scrub_event` + `bind_contextvars` + pattern PII. Mục tiêu ≥ 80/100 | Tạo prompt v1 trên Langfuse, gán label `production`, chạy 10+ trace có metadata | Điền `slo.yaml` + 3 alert + runbook `docs/alerts.md` (**chưa cần log thật**) | Viết trước mục 1/2/5 của report; chuẩn bị kịch bản demo Metrics → Traces → Logs |
-| **1:30** | **Merge `feat/logging-pii` vào `main` trước tiên.** Cả nhóm rebase lên `main` mới | | | |
-| **1:30–2:30** | Bổ sung test PII, hỗ trợ R3 nếu thiếu trường log | Tạo prompt v2 + label `candidate`, chạy cùng input 2 label, thực hiện rollback, chụp 2 trace ID | Rebase → chạy load_test sinh log thật → dựng đủ 6 panel → `validate_dashboard.py` báo `6/6 panel` → chụp ảnh | Practice `inject_incident.py --scenario rag_slow` để tập luồng điều tra |
-| **2:30** | **Merge `feat/tracing-prompt` rồi `feat/dashboard-slo`** | | | |
-| **2:30–3:30** | Hỗ trợ chứng minh root cause bằng log + correlation ID | Cung cấp trace ID của request chậm | Đối chiếu triệu chứng với threshold panel, xác nhận alert nào lẽ ra phải bắn | **Chủ trì:** chạy challenge K4 chính thức, xác định triệu chứng → span bất thường → log chứng minh → fix + preventive |
-| **3:30–4:00** | Rà `git status`, không lộ `.env`/PII | Nộp evidence prompt | Nộp evidence dashboard | Ghép report, `pytest -q`, commit SHA cuối, chạy demo thử |
+| Khung giờ           | R1 — Logging & PII                                                                                                                     | R2 — Tracing & Prompt                                                                                 | R3 — Dashboard & Alert                                                                                                     | R4 — Incident & Report                                                                                                                      |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **0:00–0:15** | Chốt 4 hợp đồng ở mục 2 (cả nhóm)                                                                                               | ←                                                                                                     | ←                                                                                                                          | ←                                                                                                                                           |
+| **0:15–0:30** | Setup env, chạy`load_test.py`, lưu baseline `validate_logs.py`                                                                    | Setup, lấy Langfuse key,`/health` báo `tracing_enabled: true`                                    | Chạy`validate_dashboard.py` để hiểu contract                                                                          | Đọc`config/challenge.json`, dựng khung report                                                                                           |
+| **0:30–1:30** | **Đường găng.** Xong 4 TODO middleware + processor `scrub_event` + `bind_contextvars` + pattern PII. Mục tiêu ≥ 80/100 | Tạo prompt v1 trên Langfuse, gán label`production`, chạy 10+ trace có metadata                  | Điền`slo.yaml` + 3 alert + runbook `docs/alerts.md` (**chưa cần log thật**)                                  | Viết trước mục 1/2/5 của report; chuẩn bị kịch bản demo Metrics → Traces → Logs                                                   |
+| **1:30**       | **Merge `feat/logging-pii` vào `main` trước tiên.** Cả nhóm rebase lên `main` mới                                   |                                                                                                        |                                                                                                                             |                                                                                                                                              |
+| **1:30–2:30** | Bổ sung test PII, hỗ trợ R3 nếu thiếu trường log                                                                                 | Tạo prompt v2 + label`candidate`, chạy cùng input 2 label, thực hiện rollback, chụp 2 trace ID | Rebase → chạy load_test sinh log thật → dựng đủ 6 panel →`validate_dashboard.py` báo `6/6 panel` → chụp ảnh | Practice`inject_incident.py --scenario rag_slow` để tập luồng điều tra                                                               |
+| **2:30**       | **Merge `feat/tracing-prompt` rồi `feat/dashboard-slo`**                                                                     |                                                                                                        |                                                                                                                             |                                                                                                                                              |
+| **2:30–3:30** | Hỗ trợ chứng minh root cause bằng log + correlation ID                                                                              | Cung cấp trace ID của request chậm                                                                  | Đối chiếu triệu chứng với threshold panel, xác nhận alert nào lẽ ra phải bắn                                    | **Chủ trì:** chạy challenge K4 chính thức, xác định triệu chứng → span bất thường → log chứng minh → fix + preventive |
+| **3:30–4:00** | Rà`git status`, không lộ `.env`/PII                                                                                              | Nộp evidence prompt                                                                                   | Nộp evidence dashboard                                                                                                     | Ghép report,`pytest -q`, commit SHA cuối, chạy demo thử                                                                                |
 
 Lệnh challenge chính thức (chỉ R4 chạy, sau 2:30):
 
@@ -197,6 +197,7 @@ Nếu vẫn có conflict: người **đang rebase** là người sửa, và ch�
 ## 6. Định nghĩa "xong" cho từng vai
 
 ### R1 — Logging & PII
+
 - [ ] `validate_logs.py` in `Estimated Score` ≥ 80/100 (mục tiêu 100).
 - [ ] `Unique correlation IDs found` ≥ 2, không còn record nào có `correlation_id == "MISSING"`.
 - [ ] `Potential PII leaks detected: 0` — kể cả email, phone VN, CCCD 12 số, số thẻ.
@@ -205,6 +206,7 @@ Nếu vẫn có conflict: người **đang rebase** là người sửa, và ch�
 - [ ] `python -m pytest tests/test_pii.py tests/test_chat_observability.py -q` pass.
 
 ### R2 — Tracing & Prompt Version
+
 - [ ] ≥ 10 traces trên Langfuse, mỗi trace có `user_id` (đã hash), `session_id`, tags.
 - [ ] Trace hiển thị `prompt_name`, `prompt_label`, `prompt_version` trong metadata.
 - [ ] Có prompt `day13-chat` v1 (label `production`) và v2 (label `candidate`).
@@ -214,6 +216,7 @@ Nếu vẫn có conflict: người **đang rebase** là người sửa, và ch�
 - [ ] `python -m pytest tests/test_prompt_management.py tests/test_agent_prompt_trace.py tests/test_tracing_adapter.py -q` pass.
 
 ### R3 — Dashboard, SLO & Alert
+
 - [ ] `python scripts/validate_dashboard.py` in `HỢP LỆ: 6/6 panel`.
 - [ ] Dashboard runtime có đủ 6 nhóm: latency (p50/p95/p99), traffic, error, cost, token, quality.
 - [ ] Ảnh dashboard thấy rõ **time range, đơn vị và đường threshold**.
@@ -223,6 +226,7 @@ Nếu vẫn có conflict: người **đang rebase** là người sửa, và ch�
 - [ ] `python -m pytest tests/test_dashboard_validator.py -q` pass.
 
 ### R4 — Incident, Report & Demo
+
 - [ ] Chạy challenge `day13-k4-observability-v1` bằng file chính thức, **không sửa** `config/challenge.json`.
 - [ ] Triệu chứng nêu bằng số từ metrics (p95 vượt ngưỡng 2000ms bao nhiêu).
 - [ ] Có trace ID cụ thể của request chậm + tên span bất thường.
@@ -236,14 +240,14 @@ Nếu vẫn có conflict: người **đang rebase** là người sửa, và ch�
 
 ## 7. Rủi ro và cách gỡ
 
-| Rủi ro | Dấu hiệu | Cách gỡ |
-|---|---|---|
-| R1 trễ → R3 và R4 đứng chờ | Sau 1:30 vẫn chưa merge được | R1 merge trước phần correlation ID + enrichment, để pattern PII bổ sung sang commit sau. R3 tạm dùng `data/sample_queries.jsonl` để dựng khung panel |
-| Không có Langfuse key | `prompt_source == "local-fallback"`, `/health` báo `tracing_enabled: false` | App vẫn chạy, nhưng mất điểm trace. Ưu tiên xin key chung của lớp ngay trong 15 phút đầu; Docker local ở [SETUP.md](SETUP.md) là phương án dự phòng |
-| Log đã redact nhưng validator vẫn báo leak | `Potential PII leaks detected > 0` | Validator quét **toàn bộ JSON record**, kể cả trường ngoài `payload`. Kiểm tra xem có trường nào (ví dụ `session_id`, `user_id`) đang mang giá trị thật không |
-| Conflict `data/logs.jsonl` | Merge conflict hàng trăm dòng | Đã xử lý ở 5.3 — gitignore. Nếu lỡ commit rồi: `git rm --cached data/logs.jsonl` |
-| Số trong `slo.yaml` lệch `dashboard.yaml` | Giám khảo hỏi tại sao alert không khớp SLO | R3 rà lại 4 cặp giá trị trước 2:30, R4 kiểm tra chéo khi viết mục 5 report |
-| Một thành viên không có commit riêng | Mất tới 20 điểm cá nhân theo [RUBRIC.md](RUBRIC.md#b2-bằng-chứng-đóng-góp-20-điểm) | Mỗi người commit **trên nhánh của mình**, tối thiểu 3 commit, không để một người push hộ |
+| Rủi ro                                         | Dấu hiệu                                                                                    | Cách gỡ                                                                                                                                                                                    |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1 trễ → R3 và R4 đứng chờ                | Sau 1:30 vẫn chưa merge được                                                             | R1 merge trước phần correlation ID + enrichment, để pattern PII bổ sung sang commit sau. R3 tạm dùng`data/sample_queries.jsonl` để dựng khung panel                             |
+| Không có Langfuse key                         | `prompt_source == "local-fallback"`, `/health` báo `tracing_enabled: false`            | App vẫn chạy, nhưng mất điểm trace. Ưu tiên xin key chung của lớp ngay trong 15 phút đầu; Docker local ở[SETUP.md](SETUP.md) là phương án dự phòng                        |
+| Log đã redact nhưng validator vẫn báo leak | `Potential PII leaks detected > 0`                                                          | Validator quét**toàn bộ JSON record**, kể cả trường ngoài `payload`. Kiểm tra xem có trường nào (ví dụ `session_id`, `user_id`) đang mang giá trị thật không |
+| Conflict`data/logs.jsonl`                     | Merge conflict hàng trăm dòng                                                              | Đã xử lý ở 5.3 — gitignore. Nếu lỡ commit rồi:`git rm --cached data/logs.jsonl`                                                                                                   |
+| Số trong`slo.yaml` lệch `dashboard.yaml`  | Giám khảo hỏi tại sao alert không khớp SLO                                              | R3 rà lại 4 cặp giá trị trước 2:30, R4 kiểm tra chéo khi viết mục 5 report                                                                                                        |
+| Một thành viên không có commit riêng      | Mất tới 20 điểm cá nhân theo[RUBRIC.md](RUBRIC.md#b2-bằng-chứng-đóng-góp-20-điểm) | Mỗi người commit**trên nhánh của mình**, tối thiểu 3 commit, không để một người push hộ                                                                                |
 
 ---
 
