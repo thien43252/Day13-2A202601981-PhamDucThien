@@ -1,6 +1,6 @@
 # R3 — Dashboard, SLO & Alert (Tóm tắt hoàn thành)
 
-- **Người thực hiện**: Nguyễn Ngọc Thuận — 2A202601949
+- **Người thực hiện**: Phạm Khắc Duy — 2A202601757
 - **Nhánh**: `feat/dashboard-slo` (chưa push/merge)
 - **Ngày hoàn thành**: 2026-08-11
 - **Trạng thái**: ✅ **Hoàn thành 100% task**

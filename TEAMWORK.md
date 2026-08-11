@@ -13,8 +13,8 @@ Tài liệu này chia 4 vai trò trong [README.md](README.md) thành 4 luồng l
 | Vai                                      | Thành viên         | Mã học viên | Phạm vi chính                                          |
 | ---------------------------------------- | -------------------- | -------------- | -------------------------------------------------------- |
 | **R1 — Logging & PII**            | Phạm Đức Thiện   | 2A202601981    | correlation ID, enrichment metadata, JSON log, redaction |
-| **R2 — Tracing & Prompt Version** | Phạm Khắc Duy      | 2A202601757    | Langfuse traces, prompt v1/v2, label & rollback          |
-| **R3 — Dashboard, SLO & Alert**   | Nguyễn Ngọc Thuận | 2A202601949    | 6 panel, threshold, SLO, alert rules, runbook            |
+| **R2 — Tracing & Prompt Version** | Nguyễn Ngọc Thuận | 2A202601949    | Langfuse traces, prompt v1/v2, label & rollback          |
+| **R3 — Dashboard, SLO & Alert**   | Phạm Khắc Duy      | 2A202601757    | 6 panel, threshold, SLO, alert rules, runbook            |
 | **R4 — Incident, Report & Demo**  | Trần Công Chiến   | 2A202601053    | challenge K4, Metrics → Traces → Logs, report, demo    |
 
 > Vai trò có thể hoán đổi giữa các thành viên, nhưng **giữ nguyên ranh giới file ở mục 3** — đó là thứ quyết định việc merge có sạch hay không.
