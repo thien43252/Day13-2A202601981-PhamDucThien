@@ -4,15 +4,15 @@
 
 - Tên nhóm: B07
 - Repository URL: [github.com/thien43252/Day13-2A202601981-PhamDucThien](https://github.com/thien43252/Day13-2A202601981-PhamDucThien)
-- Commit SHA cuối: `37133bf` (`check`)
+- Commit SHA cuối: 0bf5f
 - Thành viên và vai trò:
 
-| Thành viên         | Mã học viên | Vai trò                  |
-| -------------------- | -------------- | ------------------------- |
-| Phạm Đức Thiện   | 2A202601981    | Logging & PII             |
-| Phạm Khắc Duy      | 2A202601757    | Tracing & Prompt Version  |
-| Nguyễn Ngọc Thuận | 2A202601949    | Dashboard, SLO & Alert    |
-| Trần Công Chiến   | 2A202601053    | Incident, Report & Demo   |
+| Thành viên         | Mã học viên | Vai trò                 |
+| -------------------- | -------------- | ------------------------ |
+| Phạm Đức Thiện   | 2A202601981    | Logging & PII            |
+| Phạm Khắc Duy      | 2A202601757    | Tracing & Prompt Version |
+| Nguyễn Ngọc Thuận | 2A202601949    | Dashboard, SLO & Alert   |
+| Trần Công Chiến   | 2A202601053    | Incident, Report & Demo  |
 
 ## 2. Kết quả kỹ thuật
 
@@ -58,9 +58,9 @@
 
 Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 
-| Thành viên        | Phần việc                                                    | Commit/PR                                                        | Điều đã học                                                                                                                                                                                                               |
-| ------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Phạm Đức Thiện  | R1 — correlation ID, log enrichment, JSON log, PII redaction  | `782413b`, `b058330`, `0ab7464`, `0419918`, `f428d5e`  | Redaction phải đặt ở processor cuối chain, không phải ở từng call site: chỉ cần một chỗ log quên gọi`summarize_text` là leak. Và validator quét cả record nên scrub riêng `payload` là không đủ.  |
-| Phạm Khắc Duy | R2 — tracing context, generation metadata, prompt-version observability và flush Langfuse | [`45212b1`](https://github.com/thien43252/Day13-2A202601981-PhamDucThien/commit/45212b1) trên `feat/tracing-prompt` (đã merge qua PR #3) | Khi trace có metadata nhất quán (`user_id` đã hash, session, feature, model và prompt label/version), việc so sánh hai prompt không còn phụ thuộc vào việc đọc log thủ công. Flush cũng là bước quan trọng để tránh mất event khi process kết thúc. |
-| Nguyễn Ngọc Thuận | R3 — định nghĩa 6 dashboard panel, SLO, symptom-based alert và runbook | [`cff7b32`](https://github.com/thien43252/Day13-2A202601981-PhamDucThien/commit/cff7b32) trên `feat/dashboard-slo` (đã merge qua PR #2) | SLO phải xuất phát từ hành vi người dùng và dùng chung một nguồn ngưỡng giữa dashboard, alert và runbook. Nếu ba nơi dùng ba con số khác nhau thì alert không còn là tín hiệu đáng tin để điều tra. |
-| Trần Công Chiến | R4 — incident, tổng hợp report và demo | Chưa thấy nhánh/commit `feature/incident` trong local hoặc remote Git history hiện tại; cần bổ sung SHA/PR thực tế trước khi nộp | Bài học được ghi ở dạng kế hoạch điều tra: luôn đi theo chuỗi metrics → correlation ID/log → trace trước khi kết luận root cause; không suy diễn nguyên nhân chỉ từ một đường biểu đồ. |
+| Thành viên         | Phần việc                                                                                 | Commit/PR                                                                                                                                      | Điều đã học                                                                                                                                                                                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Phạm Đức Thiện   | R1 — correlation ID, log enrichment, JSON log, PII redaction                               | `782413b`, `b058330`, `0ab7464`, `0419918`, `f428d5e`                                                                                | Redaction phải đặt ở processor cuối chain, không phải ở từng call site: chỉ cần một chỗ log quên gọi`summarize_text` là leak. Và validator quét cả record nên scrub riêng `payload` là không đủ.                                                      |
+| Phạm Khắc Duy      | R2 — tracing context, generation metadata, prompt-version observability và flush Langfuse | [`45212b1`](https://github.com/thien43252/Day13-2A202601981-PhamDucThien/commit/45212b1) trên `feat/tracing-prompt` (đã merge qua PR #3) | Khi trace có metadata nhất quán (`user_id` đã hash, session, feature, model và prompt label/version), việc so sánh hai prompt không còn phụ thuộc vào việc đọc log thủ công. Flush cũng là bước quan trọng để tránh mất event khi process kết thúc. |
+| Nguyễn Ngọc Thuận | R3 — định nghĩa 6 dashboard panel, SLO, symptom-based alert và runbook                 | [`cff7b32`](https://github.com/thien43252/Day13-2A202601981-PhamDucThien/commit/cff7b32) trên `feat/dashboard-slo` (đã merge qua PR #2)  | SLO phải xuất phát từ hành vi người dùng và dùng chung một nguồn ngưỡng giữa dashboard, alert và runbook. Nếu ba nơi dùng ba con số khác nhau thì alert không còn là tín hiệu đáng tin để điều tra.                                               |
+| Trần Công Chiến   | R4 — incident, tổng hợp report và demo                                                  | Chưa thấy nhánh/commit`feature/incident` trong local hoặc remote Git history hiện tại; cần bổ sung SHA/PR thực tế trước khi nộp | Bài học được ghi ở dạng kế hoạch điều tra: luôn đi theo chuỗi metrics → correlation ID/log → trace trước khi kết luận root cause; không suy diễn nguyên nhân chỉ từ một đường biểu đồ.                                                            |
