@@ -1,0 +1,20 @@
+R4 — Challenge K4: log line + correlation ID chung minh root cause
+Nguon: data/logs.jsonl (challenge chinh thuc 10:06-10:07 UTC)
+
+Cap event cua request cham nhat (cung correlation ID req-94bba74b, session k4-challenge-s02):
+  2026-08-11T10:06:53.380320Z | request_received | corr=req-94bba74b | feature=monitoring | model=claude-sonnet-4-5
+  2026-08-11T10:06:58.279732Z | response_sent    | corr=req-94bba74b | latency_ms=4898 | tokens_in=42 | tokens_out=155 | cost_usd=0.002451
+
+5 correlation ID cua 5 request challenge (moi request deu > 2000ms):
+  req-94bba74b | k4-challenge-s02 | latency_ms=4898   <- cham nhat
+  req-bb01054e | k4-challenge-s05 | latency_ms=2650
+  req-3192d00a | k4-challenge-s03 | latency_ms=2651
+  req-8eaeb978 | k4-challenge-s01 | latency_ms=2650
+  req-4f0f6e26 | k4-challenge-s04 | latency_ms=2650
+
+Sau fix (disable rag_slow), request kiem tra:
+  corr=req-f4104426 | latency_ms=150   <- 32x nhanh hon
+
+Ket luan:
+- Corr ID req-94bba74b ghep duoc tu /metrics (traffic 5, p95 4898ms) -> trace 8e012a22... -> log latency_ms=4898.
+- Luong Metrics -> Traces -> Logs noi duoc bang correlation ID + timestamp.

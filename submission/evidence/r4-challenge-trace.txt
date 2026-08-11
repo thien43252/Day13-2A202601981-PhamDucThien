@@ -1,0 +1,19 @@
+R4 — Challenge K4: trace va span bat thuong
+Nguon: Langfuse public API (tags=monitoring, thoi diem chay challenge chinh thuc)
+
+5 trace cua request challenge (10:06-10:07 UTC):
+- k4-challenge-s04 -> a30a3dcb21388e48bbf156cacc57399f
+- k4-challenge-s01 -> 23a8423a76ef489fca274f5a6891ec65
+- k4-challenge-s03 -> e07c88a906378c8fd290deaa4e14a8ad
+- k4-challenge-s05 -> d85455b9b3ff318f7ed76fd62d607b54
+- k4-challenge-s02 -> 8e012a22fdaadbab5c4d1257ab15be70   <-- request cham nhat (latency 4898ms)
+
+Chi tiet trace cham nhat 8e012a22fdaadbab5c4d1257ab15be70:
+  name: lab-agent.run
+  metadata: {"prompt_name":"day13-chat","prompt_label":"production","prompt_version":3,"prompt_source":"langfuse","doc_count":1}
+  Observations:
+    GENERATION lab-agent.run  duration_ms = 4825.0   <-- span bat thuong
+
+Ket luan:
+- Span bat thuong: generation `lab-agent.run` ~4825ms (~2.4x nguong 2000ms).
+- Toan bo thoi gian nam trong 1 span duy nhat -> doc_count = 1 (RAG retrieve) la diem treo.

@@ -1,0 +1,24 @@
+R4 — Challenge K4: trieu chung tu metrics
+Challenge: day13-k4-observability-v1 | incident: rag_slow
+Lenh: python scripts/inject_incident.py && python scripts/load_test.py --challenge --concurrency 5
+
+[1] Metrics TRUOC incident (/metrics):
+{"traffic":0,"latency_p50":0.0,"latency_p95":0.0,"latency_p99":0.0,"avg_cost_usd":0.0,"total_cost_usd":0,"tokens_in_total":0,"tokens_out_total":0,"error_breakdown":{},"quality_avg":0.0}
+
+[2] Load test SAU khi bat incident (5 request challenge, feature=monitoring):
+[200] req-bb01054e | monitoring | 15530.3ms
+[200] req-3192d00a | monitoring | 15530.6ms
+[200] req-94bba74b | monitoring | 15533.0ms
+[200] req-4f0f6e26 | monitoring | 15538.1ms
+[200] req-8eaeb978 | monitoring | 15540.4ms
+
+[3] Metrics SAU incident (/metrics):
+{"traffic":5,"latency_p50":2650.0,"latency_p95":4898.0,"latency_p99":4898.0,"avg_cost_usd":0.0023,"total_cost_usd":0.0113,"tokens_in_total":215,"tokens_out_total":713,"error_breakdown":{},"quality_avg":0.84}
+
+Ket luan:
+- p95 = 4898ms, vuot nguong challenge 2000ms ~ 2.45 lan (4898/2000).
+- p50 = 2650ms cung da vuot 2000ms -> khong chi tail latency ma median da cham.
+- Client end-to-end ~15.5s/request (do event loop bi blocking -> cac request xep hang noi tiep).
+
+[4] Fix action: python scripts/inject_incident.py --disable
+Sau fix, 1 request binh thuong (/chat) chi mat 150ms (server latency_ms) -> khoi phuc dich vu.
