@@ -15,8 +15,6 @@
 
 ## 2. Kết quả kỹ thuật
 
-> ⚠ Các số dưới đây là baseline tại thời điểm scaffold — cập nhật lại sau khi cả nhóm merge xong và chạy đủ checkpoint.
-
 - Điểm `validate_logs.py`: **100/100** (4/4 tiêu chí PASSED)
 - Tổng số traces: **10+ traces trên Langfuse** (5 production/v1 + 5 candidate/v2, xem mục 4)
 - Số PII leak còn lại: **0**
@@ -28,7 +26,7 @@
 
 ### Evidence correlation ID
 
-- `submission/evidence/r1-log-correlation-id.txt`
+- `submission/evidence/r1-log-correlation-id.png`
 - `submission/evidence/r1-log-events-contract.txt`
 
 Mỗi request nhận đúng một correlation ID dạng `req-<8 ký tự hex>`, do
@@ -42,7 +40,7 @@ Nếu client tự gửi `x-request-id` đúng định dạng thì hệ thống d
 service); giá trị sai định dạng bị thay bằng ID mới để không vỡ contract log và không cho
 phép chèn giá trị lạ vào response header.
 
-Ví dụ một request hoàn chỉnh (13 correlation ID duy nhất trong lần chạy của R1):
+Ví dụ một request hoàn chỉnh (16 correlation ID duy nhất trong lần chạy của R1):
 
 ```
 req-59f5080d  request_received  service=api  feature=qa  model=claude-sonnet-4-5
@@ -52,8 +50,8 @@ req-59f5080d  response_sent     latency_ms=1071  tokens_in=36  tokens_out=102
 
 ### Evidence PII redaction
 
-- `submission/evidence/r1-pii-redacted.txt`
-- Trước/sau: `r1-validate-logs-before.txt` (30/100) → `r1-validate-logs-after.txt` (100/100)
+- `submission/evidence/r1-pii-redacted.png`
+- Trước/sau: `r1-validate-logs-before.png` (30/100) → `r1-validate-logs-after.png` (100/100)
 
 Hai lớp bảo vệ:
 
@@ -73,10 +71,10 @@ Pattern đang bắt: email, số điện thoại VN (5 biến thể), CCCD 12 s�
 ### Kết quả validator (đã xác minh lại trên log mới sinh)
 
 ```
-Total log records analyzed: 21
+Total log records analyzed: 33
 Records with missing required fields: 0
 Records with missing enrichment (context): 0
-Unique correlation IDs found: 10
+Unique correlation IDs found: 16
 Potential PII leaks detected: 0
 Estimated Score: 100/100
 ```
