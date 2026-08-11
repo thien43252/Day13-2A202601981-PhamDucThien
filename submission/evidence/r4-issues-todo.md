@@ -5,17 +5,11 @@
 
 ---
 
-## 1. `data/logs.jsonl` đang bị Git theo dõi (tracked) — nên gitignore
+## 1. `data/logs.jsonl` đang bị Git theo dõi (tracked) — ✅ ĐÃ XỬ LÝ
 
-- **Hiện trạng:** `git ls-files --stage data/logs.jsonl` trả ra dòng `100644 ... data/logs.jsonl` → file đang ở trong index.
-- **Vì sao phải sửa:** TEAMWORK mục 5.3 — file này append-only, 4 người commit sẽ conflict mọi dòng. Hợp đồng chốt: thêm `data/logs.jsonl` vào `.gitignore` (R1 làm trong commit đầu tiên), ai cần log tự sinh lại.
-- **Kiểm tra hiện tại:** `.gitignore` **chưa có** dòng `data/logs.jsonl`.
-- **Việc cần làm:**
-  ```bash
-  git rm --cached data/logs.jsonl
-  echo "data/logs.jsonl" >> .gitignore
-  ```
-  Nếu Lab Coach yêu cầu nộp log mẫu → R4 copy một snapshot đã redact vào `submission/evidence/logs-sample.jsonl` ở commit cuối, một lần duy nhất.
+- **Hiện trạng cũ:** `git ls-files --stage data/logs.jsonl` trả ra dòng `100644 ...` → file nằm trong index.
+- **Trạng thái:** ✅ R1 đã xử lý trong PR #1: file **không còn được track** (`git ls-files` rỗng) và `.gitignore` dòng 222 có `data/logs.jsonl`.
+- **Còn lại nếu cần:** Nếu Lab Coach yêu cầu nộp log mẫu → R4 copy một snapshot đã redact vào `submission/evidence/logs-sample.jsonl` ở commit cuối, một lần duy nhất.
 
 ## 2. `submission/REPORT.md` bảng mục 1 ghi đảo vai trò R2/R3 — đã sửa
 
@@ -37,15 +31,17 @@
 
 ---
 
-## Danh sách TODO đang chờ trong `REPORT.md`
+## Danh sách TODO đang chờ trong `REPORT.md` (cập nhật sau khi merge R1)
 
-| Mục | Chờ ai | Nội dung |
+| Mục | Chờ ai | Trạng thái |
 |---|---|---|
-| Mục 2 — validate_logs | R1 | cập nhật điểm sau khi đạt ≥80 |
-| Mục 2 — traces | R2 | cập nhật tổng trace ≥10 có metadata |
-| Mục 2 — dashboard link | R3 | URL/screenshot dashboard |
-| Mục 3 | R1, R2 | notes-r1.md, notes-r2.md |
-| Mục 4 | R2 | 2 trace ID + ảnh rollback |
-| Mục 5 | R3 | notes-r3.md, kiểm tra chéo slo↔dashboard |
-| Mục 6 | R4 (sau 2:30) | chạy challenge chính thức |
-| Mục 7 | cả nhóm | mỗi người 1 dòng đóng góp |
+| Mục 2 — validate_logs | R1 | ✅ 100/100 đã điền, đã xác minh lại trên log mới (21 records, 10 correlation ID, 0 PII) |
+| Mục 2 — traces | R2 | ⏳ TODO còn lại |
+| Mục 2 — dashboard link | R3 | ⏳ TODO còn lại |
+| Mục 3 — Logging | R1 | ✅ đã dán từ notes-r1.md; phần trace waterfall vẫn TODO(R2) |
+| Mục 4 | R2 | ⏳ TODO còn lại |
+| Mục 5 | R3 | ⏳ TODO còn lại (notes-r3.md + kiểm tra chéo slo↔dashboard) |
+| Mục 6 | R4 (sau 2:30) | ⏳ chạy challenge chính thức |
+| Mục 7 | cả nhóm | ✅ R1 đã điền; R2/R3/R4 TODO |
+
+**Ghi chú khi merge R2/R3:** nhánh R4 cần `git fetch origin && git rebase origin/main` rồi kiểm tra REPORT không bị đè (REPORT là file duy nhất của R4 — nếu conflict, giữ bản R4 và lấy lại số liệu từ notes-r*).

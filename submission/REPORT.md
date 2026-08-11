@@ -17,19 +17,71 @@
 
 > ⚠ Các số dưới đây là baseline tại thời điểm scaffold — cập nhật lại sau khi cả nhóm merge xong và chạy đủ checkpoint.
 
-- Điểm `validate_logs.py`: 30/100 <!-- TODO(R1): cập nhật sau khi đạt ≥80/100, mục tiêu 100 -->
+- Điểm `validate_logs.py`: **100/100** (4/4 tiêu chí PASSED)
 - Tổng số traces: 21 <!-- TODO(R2): cập nhật sau khi chạy 10+ trace có metadata -->
-- Số PII leak còn lại: 0 <!-- TODO(R1): xác nhận "Potential PII leaks detected: 0" trên toàn bộ JSON record -->
+- Số PII leak còn lại: **0**
 - Link/đường dẫn dashboard: <!-- TODO(R3): cung cấp URL hoặc screenshot sau khi dựng dashboard runtime -->
 
 ## 3. Logging và tracing
 
-<!-- TODO(R1): dán nội dung từ `submission/evidence/notes-r1.md` vào mục này -->
+### Evidence correlation ID
 
-- Evidence correlation ID: <!-- TODO(R1): ảnh `r1-log-correlation-id.png` -->
-- Evidence PII redaction: <!-- TODO(R1): ảnh `r1-pii-redacted.png` -->
-- Evidence trace waterfall: <!-- TODO(R2): ảnh `r2-trace-waterfall.png` -->
-- Giải thích một span đáng chú ý: <!-- TODO(R2): mô tả span + lý do đáng chú ý -->
+- `submission/evidence/r1-log-correlation-id.txt`
+- `submission/evidence/r1-log-events-contract.txt`
+
+Mỗi request nhận đúng một correlation ID dạng `req-<8 ký tự hex>`, do
+[app/middleware.py](../app/middleware.py) sinh ra rồi `bind_contextvars` vào structlog,
+nên cả `request_received`, `response_sent` và `request_failed` của cùng một request đều
+mang cùng một ID. ID cũng được trả về client qua header `x-request-id`, kèm
+`x-response-time-ms` — nhờ vậy khi điều tra incident có thể đi từ response của client về
+đúng dòng log, không phải dò theo thời gian.
+
+Nếu client tự gửi `x-request-id` đúng định dạng thì hệ thống dùng lại ID đó (trace xuyên
+service); giá trị sai định dạng bị thay bằng ID mới để không vỡ contract log và không cho
+phép chèn giá trị lạ vào response header.
+
+Ví dụ một request hoàn chỉnh (13 correlation ID duy nhất trong lần chạy của R1):
+
+```
+req-59f5080d  request_received  service=api  feature=qa  model=claude-sonnet-4-5
+req-59f5080d  response_sent     latency_ms=1071  tokens_in=36  tokens_out=102
+                                cost_usd=0.001638  quality_score=0.9
+```
+
+### Evidence PII redaction
+
+- `submission/evidence/r1-pii-redacted.txt`
+- Trước/sau: `r1-validate-logs-before.txt` (30/100) → `r1-validate-logs-after.txt` (100/100)
+
+Hai lớp bảo vệ:
+
+1. `summarize_text()` chạy ngay tại handler `/chat`, che PII trước khi giá trị được đưa vào
+   `payload`.
+2. Processor `scrub_event` trong [app/logging_config.py](../app/logging_config.py) chạy
+   **trước** khi record được ghi ra file/stdout. Đây là lớp chốt: `validate_logs.py` quét
+   toàn bộ JSON record chứ không riêng `payload`, nên processor scrub **đệ quy mọi trường
+   string** (kể cả dict/list lồng nhau), chỉ miễn `ts`, `level`, `correlation_id` để không
+   làm sai định dạng định danh kỹ thuật.
+
+Pattern đang bắt: email, số điện thoại VN (5 biến thể), CCCD 12 số, số thẻ 16 số, hộ chiếu
+(1 chữ cái + 7 số) và địa chỉ VN theo từ khoá hành chính.
+
+`user_id` không bao giờ vào log ở dạng thô: chỉ ghi `user_id_hash` = sha256 cắt 12 ký tự.
+
+### Kết quả validator (đã xác minh lại trên log mới sinh)
+
+```
+Total log records analyzed: 21
+Records with missing required fields: 0
+Records with missing enrichment (context): 0
+Unique correlation IDs found: 10
+Potential PII leaks detected: 0
+Estimated Score: 100/100
+```
+
+### Trace waterfall / span đáng chú ý
+
+<!-- TODO(R2): ảnh `r2-trace-waterfall.png` + mô tả span đáng chú ý -->
 
 ## 4. Prompt versioning
 
@@ -68,7 +120,7 @@
 
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 | ------------ | ----------- | --------- | ---------------- |
-| Phạm Đức Thiện (R1) | Logging & PII | <!-- TODO(R1) --> | <!-- TODO(R1) --> |
+| Phạm Đức Thiện (R1) | R1 — correlation ID, log enrichment, JSON log, PII redaction | `782413b`, `b058330`, `0ab7464`, `0419918`, `f428d5e` (PR #1) | Redaction phải đặt ở processor cuối chain, không phải ở từng call site: chỉ cần một chỗ log quên gọi `summarize_text` là leak. Và validator quét cả record nên scrub riêng `payload` là không đủ. |
 | Phạm Khắc Duy (R2) | Tracing & Prompt Version | <!-- TODO(R2) --> | <!-- TODO(R2) --> |
 | Nguyễn Ngọc Thuận (R3) | Dashboard, SLO & Alert | <!-- TODO(R3) --> | <!-- TODO(R3) --> |
 | Trần Công Chiến (R4) | Incident, Report & Demo | <!-- TODO(R4) --> | <!-- TODO(R4) --> |
