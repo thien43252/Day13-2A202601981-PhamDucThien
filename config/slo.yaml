@@ -4,13 +4,16 @@ slis:
   latency_p95_ms:
     objective: 3000
     target: 99.5
-    note: Replace with your group's target
+    note: "p95 latency must stay under 3000ms; challenge K4 uses 2000ms threshold for incident detection"
   error_rate_pct:
     objective: 2
     target: 99.0
+    note: "error rate from request_failed / request_received count; alert at 2% breach"
   daily_cost_usd:
     objective: 2.5
     target: 100.0
+    note: "sum of cost_usd field per day; alert if daily cost exceeds 2.5 USD"
   quality_score_avg:
     objective: 0.75
     target: 95.0
+    note: "mean of quality_score field; alert if drops below 0.75"
