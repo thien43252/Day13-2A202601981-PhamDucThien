@@ -57,3 +57,11 @@ def test_agent_links_prompt_version_to_trace_and_generation(monkeypatch) -> None
     }
     assert generation_update["prompt"] is client.prompt
     assert generation_update["metadata"]["prompt_version"] == "3"
+    assert generation_update["input"] == {
+        "feature": "qa",
+        "docs_count": 1,
+        "message_preview": "Explain traces",
+    }
+    assert generation_update["output"]["answer_preview"]
+    assert generation_update["usage_details"]["input"] > 0
+    assert generation_update["usage_details"]["output"] > 0

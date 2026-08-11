@@ -88,6 +88,12 @@ class LabAgent:
             )
             langfuse_client.update_current_generation(
                 model=self.model,
+                input={
+                    "feature": feature,
+                    "docs_count": len(docs),
+                    "message_preview": summarize_text(message),
+                },
+                output={"answer_preview": summarize_text(response.text)},
                 metadata={
                     "doc_count": len(docs),
                     "query_preview": summarize_text(message),
@@ -98,8 +104,9 @@ class LabAgent:
                     "prompt_fetch_error": prompt.fetch_error,
                 },
                 usage_details={
-                    "prompt_tokens": response.usage.input_tokens,
-                    "completion_tokens": response.usage.output_tokens,
+                    "input": response.usage.input_tokens,
+                    "output": response.usage.output_tokens,
+                    "total": response.usage.input_tokens + response.usage.output_tokens,
                 },
                 cost_details={"total": cost_usd},
                 prompt=prompt.managed_prompt,
