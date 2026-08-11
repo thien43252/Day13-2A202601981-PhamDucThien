@@ -4,7 +4,7 @@
 
 - Tên nhóm: B07
 - Repository URL: [github.com/thien43252/Day13-2A202601981-PhamDucThien](https://github.com/thien43252/Day13-2A202601981-PhamDucThien)
-- Commit SHA cuối: `92db70d`
+- Commit SHA cuối: `6975c39`
 
 | Thành viên         | Mã học viên | Vai trò                  |
 | -------------------- | -------------- | ------------------------- |
@@ -183,4 +183,4 @@ Thiết kế dựa trên triệu chứng người dùng (chậm, lỗi, kém ch�
 | Phạm Đức Thiện (R1) | R1 — correlation ID, log enrichment, JSON log, PII redaction | `782413b`, `b058330`, `0ab7464`, `0419918`, `f428d5e` (PR #1) | Redaction phải đặt ở processor cuối chain, không phải ở từng call site: chỉ cần một chỗ log quên gọi `summarize_text` là leak. Và validator quét cả record nên scrub riêng `payload` là không đủ. |
 | Nguyễn Ngọc Thuận (R2) | R2 — Langfuse traces, prompt v1/v2, label `production`/`candidate`, rollback | `45212b1`, `9eac4cb`, PR #3 | Tạo generation scope tường minh bằng chung một Langfuse client cho generation + trace metadata; dùng client singleton + flush khi kết thúc. |
 | Phạm Khắc Duy (R3) | R3 — 6 panel dashboard, SLO, 3 alert + runbook | `cff7b32`, PR #2 | Threshold phải khớp giữa `slo.yaml` và `dashboard.yaml`; thiết kế alert theo triệu chứng (symptom-based) để ngưỡng chắc chắn bắn đúng incident. |
-| Trần Công Chiến (R4) | R4 — integrator: merge 3 nhánh R1/R2/R3, điều tra challenge K4 (Metrics → Traces → Logs → Root cause), hoàn thiện REPORT.md + evidence | `130eb0d`, `08af614`, `c96af1b`, `d032c6d` (merge), `92db70d` | Nối Metrics → Traces → Logs bằng correlation ID + trace ID; phát hiện `time.sleep` đồng bộ trong handler async chặn event loop → request xếp hàng; làm integrator giữ REPORT.md sạch conflict bằng cách merge theo thứ tự và giữ đúng ranh giới file. |
+| Trần Công Chiến (R4) | R4 — integrator: merge 3 nhánh R1/R2/R3, điều tra challenge K4 (Metrics → Traces → Logs → Root cause), hoàn thiện REPORT.md + evidence | `130eb0d`, `08af614`, `c96af1b`, `d032c6d` (merge), `92db70d`, `6975c39` | Nối Metrics → Traces → Logs bằng correlation ID + trace ID; phát hiện `time.sleep` đồng bộ trong handler async chặn event loop → request xếp hàng; làm integrator giữ REPORT.md sạch conflict bằng cách merge theo thứ tự và giữ đúng ranh giới file. |
