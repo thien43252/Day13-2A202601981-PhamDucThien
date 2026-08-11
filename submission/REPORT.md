@@ -40,7 +40,7 @@ Nếu client tự gửi `x-request-id` đúng định dạng thì hệ thống d
 service); giá trị sai định dạng bị thay bằng ID mới để không vỡ contract log và không cho
 phép chèn giá trị lạ vào response header.
 
-Ví dụ một request hoàn chỉnh (16 correlation ID duy nhất trong lần chạy của R1):
+Ví dụ một request hoàn chỉnh (24 correlation ID duy nhất trong log cuối cùng):
 
 ```
 req-59f5080d  request_received  service=api  feature=qa  model=claude-sonnet-4-5
@@ -68,13 +68,13 @@ Pattern đang bắt: email, số điện thoại VN (5 biến thể), CCCD 12 s�
 
 `user_id` không bao giờ vào log ở dạng thô: chỉ ghi `user_id_hash` = sha256 cắt 12 ký tự.
 
-### Kết quả validator (đã xác minh lại trên log mới sinh)
+### Kết quả validator (đã xác minh lại trên log hiện tại, gồm cả lần chạy challenge K4)
 
 ```
-Total log records analyzed: 33
+Total log records analyzed: 49
 Records with missing required fields: 0
 Records with missing enrichment (context): 0
-Unique correlation IDs found: 16
+Unique correlation IDs found: 24
 Potential PII leaks detected: 0
 Estimated Score: 100/100
 ```
@@ -162,23 +162,25 @@ Thiết kế dựa trên triệu chứng người dùng (chậm, lỗi, kém ch�
 
 ## 6. Điều tra challenge
 
-> ⚠ Chỉ điền sau khi chạy challenge chính thức (sau 2:30). KHÔNG sửa `config/challenge.json`.
+> Đã chạy challenge chính thức `day13-k4-observability-v1` (cohort K4, incident `rag_slow`) bằng đúng file `config/challenge.json` — **không sửa file**. Quy trình điều tra: Metrics → Traces → Logs → Root cause. Evidence: `submission/evidence/r4-challenge-metrics.txt`, `r4-challenge-trace.txt`, `r4-challenge-log.txt`.
 
 - Challenge ID: `day13-k4-observability-v1`
-- Triệu chứng từ metrics: <!-- TODO(R4): p95 vượt ngưỡng 2000ms bao nhiêu — dẫn số cụ thể từ dashboard -->
-- Trace ID liên quan: <!-- TODO(R4): trace ID request chậm + tên span bất thường -->
-- Log line/correlation ID liên quan: <!-- TODO(R4): dòng log cụ thể + correlation ID chứng minh root cause -->
-- Root cause: <!-- TODO(R4): kết luận từ log, không nói chung chung -->
-- Fix action: <!-- TODO(R4) -->
-- Preventive measure: <!-- TODO(R4): không trùng với fix action -->
+- Triệu chứng từ metrics: sau khi bật incident, `/metrics` trả về `latency_p50=2650ms`, `latency_p95=4898ms`, `latency_p99=4898ms` trên 5 request — **p95 vượt ngưỡng 2000ms khoảng 2,45 lần** (4898/2000). Cả median (p50 = 2650ms) cũng đã vượt ngưỡng, và load-test ghi nhận end-to-end tới ~15,5s/request do request bị xếp hàng. Sau khi tắt incident, cùng một request chỉ mất **150ms** — chênh ~32×.
+- Trace ID liên quan: trace `8e012a22fdaadbab5c4d1257ab15be70` (session `k4-challenge-s02` — request chậm nhất, latency 4898ms). Span bất thường: generation **`lab-agent.run` dài 4825ms** (prompt `day13-chat` v3, label `production`, source `langfuse`).
+- Log line/correlation ID liên quan: cặp event của request chậm nhất dùng chung correlation ID `req-94bba74b`:
+  ```
+  10:06:53.380Z request_received  service=api  feature=monitoring  session=k4-challenge-s02  corr=req-94bba74b
+  10:06:58.280Z response_sent     latency_ms=4898  tokens_in=42  tokens_out=155  cost_usd=0.002451  corr=req-94bba74b
+  ```
+- Root cause: incident `rag_slow` được bật → `mock_rag.retrieve()` ([app/mock_rag.py](../app/mock_rag.py)) thực hiện `time.sleep(2.5)` mô phỏng retrieval treo → toàn bộ latency của request nằm trong span `lab-agent.run` (doc_count = 1, tức RAG retrieval chính là điểm treo). Vì `time.sleep` là đồng bộ nhưng chạy trong handler `async def /chat` trên một event loop duy nhất, nó **chặn cả event loop**: 5 request phải chạy nối tiếp (mỗi request 2,7–4,9s), tạo hiệu ứng xếp hàng và làm latency end-to-end tệ hơn nhiều so với từng request đơn lẻ.
+- Fix action: tắt incident để khôi phục dịch vụ ngay lập tức — `python scripts/inject_incident.py --disable` (gọi `/incidents/rag_slow/disable`). Xác minh sau fix: request `/chat` bình thường chỉ còn **150ms** (server), không còn vi phạm ngưỡng 2000ms.
+- Preventive measure: (không trùng fix action) 1) đặt **timeout + circuit breaker** cho call RAG retrieval để một call treo không kéo dài toàn bộ request; 2) chuyển retrieval sang **non-blocking (async)** để một request chậm không chặn event loop và không gây queueing cho các request khác; 3) alert `high_latency_p95` (p95 ≥ 2500ms kéo 5 phút) sẽ bắn sớm để đội phát hiện incident trước khi người dùng chịu ảnh hưởng.
 
 ## 7. Đóng góp cá nhân
-
-<!-- TODO(R4): mỗi thành viên gửi 1 dòng: phần việc, link commit, điều đã học (TEAMWORK 5.2 bước 3). R4 tổng hợp. -->
 
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 | ------------ | ----------- | --------- | ---------------- |
 | Phạm Đức Thiện (R1) | R1 — correlation ID, log enrichment, JSON log, PII redaction | `782413b`, `b058330`, `0ab7464`, `0419918`, `f428d5e` (PR #1) | Redaction phải đặt ở processor cuối chain, không phải ở từng call site: chỉ cần một chỗ log quên gọi `summarize_text` là leak. Và validator quét cả record nên scrub riêng `payload` là không đủ. |
 | Phạm Khắc Duy (R2) | R2 — Langfuse traces, prompt v1/v2, label `production`/`candidate`, rollback | `45212b1`, PR #3 | Tạo generation scope tường minh bằng chung một Langfuse client cho generation + trace metadata; dùng client singleton + flush khi kết thúc. |
 | Nguyễn Ngọc Thuận (R3) | R3 — 6 panel dashboard, SLO, 3 alert + runbook | `cff7b32`, PR #2 | Threshold phải khớp giữa `slo.yaml` và `dashboard.yaml`; thiết kế alert theo triệu chứng (symptom-based) để ngưỡng chắc chắn bắn đúng incident. |
-| Trần Công Chiến (R4) | Incident, Report & Demo | <!-- TODO(R4) --> | <!-- TODO(R4) --> |
+| Trần Công Chiến (R4) | R4 — integrator: merge 3 nhánh R1/R2/R3, điều tra challenge K4 (Metrics → Traces → Logs → Root cause), hoàn thiện REPORT.md + evidence | `130eb0d`, `08af614`, `c96af1b`, `d032c6d` (merge), `XXXXXXX` (cuối) | Nối Metrics → Traces → Logs bằng correlation ID + trace ID; phát hiện `time.sleep` đồng bộ trong handler async chặn event loop → request xếp hàng; làm integrator giữ REPORT.md sạch conflict bằng cách merge theo thứ tự và giữ đúng ranh giới file. |
