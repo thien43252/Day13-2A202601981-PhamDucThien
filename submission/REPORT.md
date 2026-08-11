@@ -2,16 +2,23 @@
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm:
-- Repository URL:
+- Tên nhóm: B07
+- Repository URL: [github.com/thien43252/Day13-2A202601981-PhamDucThien](https://github.com/thien43252/Day13-2A202601981-PhamDucThien)
 - Commit SHA cuối:
 - Thành viên và vai trò:
 
+| Thành viên         | Mã học viên | Vai trò                  |
+| -------------------- | -------------- | ------------------------- |
+| Phạm Đức Thiện   | 2A202601981    | Logging & PII             |
+| Phạm Khắc Duy      | 2A202601757    | Dashboard, SLO & Alert    |
+| Nguyễn Ngọc Thuận | 2A202601949    | Tracing & Prompt Version  |
+| Trần Công Chiến   | 2A202601053    | Incident, Report & Demo   |
+
 ## 2. Kết quả kỹ thuật
 
-- Điểm `validate_logs.py`:
-- Tổng số traces:
-- Số PII leak còn lại:
+- Điểm `validate_logs.py`: 30/100
+- Tổng số traces: 21
+- Số PII leak còn lại: 0
 - Link/đường dẫn dashboard:
 
 ## 3. Logging và tracing
@@ -51,5 +58,5 @@
 Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
-|---|---|---|---|
-| | | | |
+| ------------ | ----------- | --------- | ---------------- |
+|              |             |           |                  |
