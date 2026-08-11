@@ -6,14 +6,14 @@ Trường `query` trong YAML là pseudocode mô tả phép tính, không phải 
 
 ## Mapping dữ liệu
 
-| Panel | Event/field | Phép tổng hợp |
-|---|---|---|
-| Latency | `response_sent.latency_ms` | P50, P95, P99 |
-| Traffic | `request_received` | count, request/phút |
-| Errors | `request_received`, `request_failed`, `error_type` | error rate và breakdown |
-| Cost | `response_sent.cost_usd` | tổng theo phút và toàn cửa sổ |
-| Tokens | `response_sent.tokens_in/tokens_out` | tổng theo từng field |
-| Quality | `response_sent.quality_score` | mean |
+| Panel   | Event/field                                              | Phép tổng hợp                    |
+| ------- | -------------------------------------------------------- | ----------------------------------- |
+| Latency | `response_sent.latency_ms`                             | P50, P95, P99                       |
+| Traffic | `request_received`                                     | count, request/phút                |
+| Errors  | `request_received`, `request_failed`, `error_type` | error rate và breakdown            |
+| Cost    | `response_sent.cost_usd`                               | tổng theo phút và toàn cửa sổ |
+| Tokens  | `response_sent.tokens_in/tokens_out`                   | tổng theo từng field              |
+| Quality | `response_sent.quality_score`                          | mean                                |
 
 Giữ time range mặc định 60 phút, refresh 30 giây và hiển thị threshold/SLO line. Giá trị chính xác nằm trong `config/dashboard.yaml`; không tự đổi contract chỉ để ảnh dashboard đẹp hơn.
 
@@ -30,6 +30,17 @@ python scripts/validate_dashboard.py
 ```
 
 Validator kiểm tra cấu trúc contract; nó không thể chứng minh biểu đồ trong ảnh dùng đúng dữ liệu. Evidence runtime vẫn bắt buộc.
+
+## Chạy Streamlit dashboard
+
+Sau khi đã có `data/logs.jsonl`, cài dependency và chạy:
+
+```bash
+uv sync
+uv run streamlit run dashboard.py
+```
+
+Mở URL Streamlit in ra (mặc định là `http://localhost:8501`). App đọc trực tiếp JSONL và có sáu panel: latency, traffic, errors, cost, tokens và quality. Mỗi panel hiển thị đơn vị, giá trị tổng hợp và đường SLO/threshold lấy từ `config/dashboard.yaml`.
 
 ## Cách kiểm tra runtime
 

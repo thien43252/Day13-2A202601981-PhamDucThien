@@ -1,0 +1,2 @@
+(base) danielk@danielk-Vostro-3590:~/AI-thucchien/labs/Day13-2A202601981-PhamDucThien$ uv run scripts/validate_dashboard.py
+HỢP LỆ: 6/6 panel có trong dashboard contract.
